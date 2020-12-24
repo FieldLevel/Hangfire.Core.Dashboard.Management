@@ -175,6 +175,11 @@ namespace Hangfire.Core.Dashboard.Management.Pages
                             {
                                 item = formInput;
                             }
+                            else if (parameterInfo.ParameterType == typeof(System.Guid))
+                            {
+                                if (formInput != null) item = Guid.Parse(formInput);
+                            }
+                            
                             else if (parameterInfo.ParameterType == typeof(int))
                             {
                                 if (formInput != null) item = int.Parse(formInput);
