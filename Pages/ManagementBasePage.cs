@@ -69,6 +69,10 @@ namespace Hangfire.Core.Dashboard.Management.Pages
                         {
                             inputs += InputNumberbox(myId, displayInfo?.LabelText ?? parameterInfo.Name, displayInfo?.PlaceholderText ?? parameterInfo.Name);
                         }
+                        else if (parameterInfo.ParameterType == typeof(int?))
+                        {
+                            inputs += InputNumberbox(myId, displayInfo?.LabelText ?? parameterInfo.Name, displayInfo?.PlaceholderText ?? parameterInfo.Name);
+                        }
                         else if (parameterInfo.ParameterType == typeof(DateTime))
                         {
                             inputs += InputDatebox(myId, displayInfo?.LabelText ?? parameterInfo.Name, displayInfo?.PlaceholderText ?? parameterInfo.Name);
@@ -153,11 +157,14 @@ namespace Hangfire.Core.Dashboard.Management.Pages
                     var schedule = Task.Run(() => context.Request.GetFormValuesAsync($"{methodName}_schedule")).Result.FirstOrDefault();
                     var cron = Task.Run(() => context.Request.GetFormValuesAsync($"{methodName}_cron")).Result.FirstOrDefault();
 
+                    var currentParam = "";
                     try
                     {
                         
                         foreach (var parameterInfo in jobMetadata.MethodInfo.GetParameters())
                         {
+                            currentParam = parameterInfo.Name;
+
                             if (parameterInfo.ParameterType == typeof(PerformContext) || parameterInfo.ParameterType == typeof(IJobCancellationToken))
                             {
                                 par.Add(null);
@@ -175,6 +182,7 @@ namespace Hangfire.Core.Dashboard.Management.Pages
 
                             object item = null;
                             var formInput = t.FirstOrDefault();
+                            
                             if (parameterInfo.ParameterType == typeof(string))
                             {
                                 item = formInput;
@@ -187,6 +195,10 @@ namespace Hangfire.Core.Dashboard.Management.Pages
                             else if (parameterInfo.ParameterType == typeof(int))
                             {
                                 if (formInput != null) item = int.Parse(formInput);
+                            }
+                            else if (parameterInfo.ParameterType == typeof(int?))
+                            {
+                                item = (formInput == null || String.IsNullOrEmpty(formInput)) ? (int?)null : int.Parse(formInput);
                             }
                             else if (parameterInfo.ParameterType == typeof(DateTime))
                             {
@@ -237,7 +249,7 @@ namespace Hangfire.Core.Dashboard.Management.Pages
                     }
                     catch (Exception e)
                     {
-                        var responseObj = new { status = "failed parsing params", message = e.Message };
+                        var responseObj = new { status = $"failed parsing param ({currentParam})", message = e.Message };
                         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                         await context.Response.WriteAsync(JsonConvert.SerializeObject(responseObj));
                         return false;
