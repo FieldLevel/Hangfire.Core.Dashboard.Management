@@ -65,6 +65,14 @@ namespace Hangfire.Core.Dashboard.Management.Pages
                         {
                             inputs += InputTextbox(myId, displayInfo?.LabelText ?? parameterInfo.Name, displayInfo?.PlaceholderText ?? parameterInfo.Name);
                         }
+                        else if (parameterInfo.ParameterType == typeof(Decimal) || parameterInfo.ParameterType == typeof(Decimal?))
+                        {
+                            inputs += InputNumberbox(myId, displayInfo?.LabelText ?? parameterInfo.Name, displayInfo?.PlaceholderText ?? parameterInfo.Name);
+                        }
+                        else if (parameterInfo.ParameterType == typeof(float) || parameterInfo.ParameterType == typeof(float?))
+                        {
+                            inputs += InputNumberbox(myId, displayInfo?.LabelText ?? parameterInfo.Name, displayInfo?.PlaceholderText ?? parameterInfo.Name);
+                        }
                         else if (parameterInfo.ParameterType == typeof(int))
                         {
                             inputs += InputNumberbox(myId, displayInfo?.LabelText ?? parameterInfo.Name, displayInfo?.PlaceholderText ?? parameterInfo.Name);
@@ -191,7 +199,22 @@ namespace Hangfire.Core.Dashboard.Management.Pages
                             {
                                 if (formInput != null) item = Guid.Parse(formInput);
                             }
-                            
+                            else if (parameterInfo.ParameterType == typeof(Decimal))
+                            {
+                                if (formInput != null) item = Decimal.Parse(formInput);
+                            }
+                            else if (parameterInfo.ParameterType == typeof(Decimal?))
+                            {
+                                if (formInput != null) item = Decimal.Parse(formInput);
+                            }
+                            else if (parameterInfo.ParameterType == typeof(float))
+                            {
+                                if (formInput != null) item = float.Parse(formInput);
+                            }
+                            else if (parameterInfo.ParameterType == typeof(float?))
+                            {
+                                if (formInput != null) item = float.Parse(formInput);
+                            }
                             else if (parameterInfo.ParameterType == typeof(int))
                             {
                                 if (formInput != null) item = int.Parse(formInput);
